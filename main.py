@@ -1,12 +1,12 @@
 from fastapi import FastAPI
 
-app = FastAPI(title="Maret Tracker API")
+app = FastAPI(title="Market Tracker API")
 
 @app.get("/")
 def root():
     return {
-        "service" : "Market tracker API"
-        "status" : "under construction"
+        "service" : "Market tracker API",
+        "status" : "under construction",
         "docs" : "/docs"
     }
 
