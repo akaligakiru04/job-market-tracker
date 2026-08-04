@@ -5,7 +5,7 @@ A FastAPI service that scrapes remote job listings on demand, stores them in Pos
 **Live** https://job-market-tracker-0m51.onrender.com/
 **Docs** https://job-market-tracker-0m51.onrender.com/docs
 
-In active development
+In active development.
 
 #Stack
 - Python / FastAPI
