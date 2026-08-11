@@ -16,5 +16,8 @@ def health():
     return {"status" : "ok"}
 
 @app.get("/jobs")
-def get_jobs():
-    return extract_jobs(fetch_raw())
+def get_jobs(search: str | None = None):
+    jobs = extract_jobs(fetch_raw())
+    if search:
+        jobs = [j for j in jobs if search.lower() in (j["title"] or "").lower()]
+    return jobs
