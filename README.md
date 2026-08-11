@@ -20,4 +20,6 @@ In active development.
 - [ ] Filtering endpoints
 - [ ] Dashboard front page
 
-*Note: hosted on Render's free tier - the first request after inactivity takes 30-60s to wake the server.*
+*Notes:*
+-hosted on Render's free tier - the first request after inactivity takes 30-60s to wake the server.
+-filtering by minimum salary excludes jobs with unknown salary so ?min_salary=50000 will drop most listings

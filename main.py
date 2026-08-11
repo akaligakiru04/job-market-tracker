@@ -16,9 +16,9 @@ def health():
     return {"status" : "ok"}
 
 @app.get("/jobs")
-def get_jobs(search: str | None = None , min_salary: int | None = None):
+def get_jobs(search: str | None = None , min_salary: int | None = None, limit: int = 50):
     jobs = extract_jobs(fetch_raw())
-    
+
     if search:
         jobs = [
             j for j in jobs 
@@ -31,4 +31,4 @@ def get_jobs(search: str | None = None , min_salary: int | None = None):
             if j["salary_min"] is not None
             and j["salary_min"] >= min_salary
         ]
-    return jobs
+    return jobs[:limit]
