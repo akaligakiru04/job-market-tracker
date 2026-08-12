@@ -1,9 +1,9 @@
-from fastapi import FastAPI
+from fastapi import FastAPI , HTTPException
 from scraper import fetch_raw, extract_jobs
 
 from pydantic import BaseModel
 
-class job(BaseModel):
+class Job(BaseModel):
     id: str
     title: str
     company: str | None = None
@@ -30,15 +30,7 @@ def root():
 def health():
     return {"status" : "ok"}
 
-@app.get("/jobs/{job_id}" , response_model=job)
-def get_job(job_id : str):                                # str not int because ReemoteJobs.org uses UUIDs like eced844d-7f....
-    jobs = extract_jobs(fetch_raw())
-    for j in jobs:
-        if j["id"] == job_id:
-            return j
-    raise HTTPException(status_code=404 , detail="job not found")   # Fast API returns a proper 404 with a json error body instead of null with a status of 200
-
-@app.get("/jobs" , response_model = job)
+@app.get("/jobs" , response_model = list[Job])
 def get_jobs(search: str | None = None , min_salary: int | None = None, limit: int = 50):
     jobs = extract_jobs(fetch_raw())
 
@@ -51,7 +43,16 @@ def get_jobs(search: str | None = None , min_salary: int | None = None, limit: i
     if min_salary is not None:
         jobs = [
             j for j in jobs
-            if j["salary_min"] is not None
-            and j["salary_min"] >= min_salary
+            if j["min_salary"] is not None
+            and j["min_salary"] >= min_salary
         ]
     return jobs[:limit]
+
+@app.get("/jobs/{job_id}" , response_model=Job)
+def get_job(job_id : str):                                # str not int because ReemoteJobs.org uses UUIDs like eced844d-7f....
+    jobs = extract_jobs(fetch_raw())
+    for j in jobs:
+        if j["id"] == job_id:
+            return j
+    raise HTTPException(status_code=404 , detail="job not found")   # Fast API returns a proper 404 with a json error body instead of null with a status of 200
+

@@ -22,8 +22,8 @@ def extract_jobs(raw):
             "company": company.get("name"),
             "category": category.get("slug"),
             "location": item.get("location") or "Remote",
-            "salary_min": item.get("salary_min"),
-            "salary_max": item.get("salary_max"),
+            "min_salary": item.get("salary_min"),
+            "max_salary": item.get("salary_max"),
             "type": item.get("type"),
             "url": item.get("apply_url"),
             "posted_at": item.get("posted_at"),
@@ -35,4 +35,4 @@ if __name__ == "__main__":
     jobs = extract_jobs(fetch_raw())
     print(f"{len(jobs)} jobs")
     for job in jobs[:5]:
-        print(f"- {job['title']} @ {job['company']} | {job['salary_min']}")
+        print(f"- {job['title']} @ {job['company']} | {job['min_salary']}")
