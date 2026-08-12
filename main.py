@@ -1,6 +1,21 @@
 from fastapi import FastAPI
 from scraper import fetch_raw, extract_jobs
 
+from pydantic import BaseModel
+
+class job(BaseModel):
+    id: str
+    title: str
+    company: str | None = None
+    category: str | None = None 
+    location: str | None = None
+    min_salary: int | None = None
+    max_salary: int | None = None
+    type: str | None = None
+    url: str | None = None
+    posted_at: str | None = None
+
+
 app = FastAPI(title="Market Tracker API")
 
 @app.get("/")
@@ -15,7 +30,15 @@ def root():
 def health():
     return {"status" : "ok"}
 
-@app.get("/jobs")
+@app.get("/jobs/{job_id}" , response_model=job)
+def get_job(job_id : str):                                # str not int because ReemoteJobs.org uses UUIDs like eced844d-7f....
+    jobs = extract_jobs(fetch_raw())
+    for j in jobs:
+        if j["id"] == job_id:
+            return j
+    raise HTTPException(status_code=404 , detail="job not found")   # Fast API returns a proper 404 with a json error body instead of null with a status of 200
+
+@app.get("/jobs" , response_model = job)
 def get_jobs(search: str | None = None , min_salary: int | None = None, limit: int = 50):
     jobs = extract_jobs(fetch_raw())
 
