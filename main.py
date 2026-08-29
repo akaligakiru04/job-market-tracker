@@ -1,3 +1,4 @@
+import httpx
 from fastapi import FastAPI , HTTPException
 from scraper import fetch_raw, extract_jobs
 from db import init_db, save_jobs, load_jobs, load_job
@@ -46,6 +47,11 @@ def get_job(job_id : str):
 
 @app.post("/refresh")
 def refresh():
-    jobs = extract_jobs(fetch_raw())
+    try:
+        jobs = extract_jobs(fetch_raw())
+    except httpx.HTTPError as e:
+        raise HTTPException(
+            status_code=502, detail=f"Upstream source unavailable: {e}"
+        )
     count = save_jobs(jobs)
     return {"saved" : count}
