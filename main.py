@@ -1,7 +1,7 @@
 import httpx
 from fastapi import FastAPI , HTTPException
 from scraper import fetch_raw, extract_jobs
-from db import init_db, save_jobs, load_jobs, load_job
+from db import init_db, save_jobs, load_jobs, load_job, prune_stale
 
 from pydantic import BaseModel
 
@@ -54,4 +54,5 @@ def refresh():
             status_code=502, detail=f"Upstream source unavailable: {e}"
         )
     count = save_jobs(jobs)
-    return {"saved" : count}
+    removed = prune_stale
+    return {"saved" : count, "pruned": removed}
