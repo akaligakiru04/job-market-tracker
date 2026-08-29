@@ -96,6 +96,26 @@ def load_jobs(search=None, min_salary=None, limit=50):
             cur.execute(sql, values)
             return [dict(r) for r in cur.fetchall()]
 
+def count_jobs(search=None, min_salary=None):
+    sql = "SELECT COUNT(*) AS total FROM jobs"
+    conditions = []
+    values = []
+
+    if search:
+        conditions.append("title ILIKE %s")
+        values.append(f"%{search}%")
+
+    if min_salary is not None:
+        conditions.append("min_salary >= %s")
+        values.append(min_salary)
+
+    if conditions:
+        sql += " WHERE " + " AND ".join(conditions)
+
+    with get_conn() as conn:
+        with conn.cursor() as cur:
+            cur.execute(sql, values)
+            return cur.fetchone()["total"]
 
 def load_job(job_id):
     with get_conn() as conn:

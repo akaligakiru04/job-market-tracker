@@ -1,7 +1,7 @@
 import httpx
 from fastapi import FastAPI , HTTPException
 from scraper import fetch_raw, extract_jobs
-from db import init_db, save_jobs, load_jobs, load_job, prune_stale
+from db import init_db, save_jobs, load_jobs, load_job, prune_stale, count_jobs
 
 from pydantic import BaseModel
 
@@ -17,7 +17,11 @@ class Job(BaseModel):
     url: str | None = None
     posted_at: str | None = None
 
-
+class JobList(BaseModel):
+    count: int
+    total: int
+    results: list[Job]
+    
 app = FastAPI(title="Market Tracker API")
 
 init_db()
@@ -34,9 +38,11 @@ def root():
 def health():
     return {"status" : "ok"}
 
-@app.get("/jobs" , response_model = list[Job])
+@app.get("/jobs" , response_model = JobList)
 def get_jobs(search: str | None = None , min_salary: int | None = None, limit: int = 50):
-    return load_jobs(search,min_salary, limit)
+    jobs = load_jobs(search,min_salary, limit)
+    total = count_jobs(search,min_salary)
+    return {"count": len(jobs), "total": total, "results": jobs}
 
 @app.get("/jobs/{job_id}" , response_model=Job)
 def get_job(job_id : str): 
